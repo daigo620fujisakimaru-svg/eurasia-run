@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- アプリのアイコン：オレンジの地に地球と、東(右)から西(左)へ進むルート -->
+  <rect width="512" height="512" fill="#f97316"/>
+  <g fill="none" stroke="#fff" opacity="0.35">
+    <circle cx="256" cy="256" r="150" stroke-width="16"/>
+    <ellipse cx="256" cy="256" rx="70" ry="150" stroke-width="10"/>
+    <line x1="106" y1="256" x2="406" y2="256" stroke-width="10"/>
+  </g>
+  <path d="M372 336 C 316 250, 262 352, 210 270 S 158 200, 150 196" fill="none" stroke="#fff" stroke-width="26" stroke-linecap="round"/>
+  <circle cx="372" cy="336" r="24" fill="#fff"/>
+  <line x1="150" y1="200" x2="150" y2="118" stroke="#fff" stroke-width="10" stroke-linecap="round"/>
+  <path d="M150 118 L204 138 L150 158 Z" fill="#fff"/>
+</svg>

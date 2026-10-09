@@ -1,0 +1,9 @@
+{
+  "name": "eurasia-run-notify",
+  "private": true,
+  "type": "module",
+  "description": "GitHub Actions から予定とチャットの通知を送るプログラム",
+  "dependencies": {
+    "firebase-admin": "^14.5.0"
+  }
+}

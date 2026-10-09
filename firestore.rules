@@ -1,0 +1,76 @@
+rules_version = '2';
+
+// データベースの門番ルール。ここに書いた条件を満たす人だけが読み書きできる。
+// 招待リスト（仲間のメールアドレス）は、このファイルではなくデータベースの config/access に置く。
+// → プログラムを公開してもメールアドレスが見えない。友達の追加は Firebase の画面で emails に足すだけ。
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isMember() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in get(/databases/$(database)/documents/config/access).data.emails;
+    }
+
+    // 自分のデータかどうか（作成時は新しいデータ、更新・削除時は今のデータで判定）
+    function isOwnNew() { return request.resource.data.uid == request.auth.uid; }
+    function isOwnExisting() { return resource.data.uid == request.auth.uid; }
+
+    // メンバー情報：全員が見られる。書き換えは本人だけ
+    match /members/{uid} {
+      allow read: if isMember();
+      allow write: if isMember() && request.auth.uid == uid;
+    }
+
+    // ランニング記録：全員が見られる（チーム累計に使う）。追加・修正・削除は本人だけ
+    match /runs/{id} {
+      allow read: if isMember();
+      allow create: if isMember() && isOwnNew();
+      allow update: if isMember() && isOwnExisting() && isOwnNew();
+      allow delete: if isMember() && isOwnExisting();
+    }
+
+    // 保存コース：全員が見られて使える（友達のコースも選べる）。修正・削除は作った人だけ
+    match /courses/{id} {
+      allow read: if isMember();
+      allow create: if isMember() && request.resource.data.createdBy == request.auth.uid;
+      allow update, delete: if isMember() && resource.data.createdBy == request.auth.uid;
+    }
+
+    // 予定（行ける日の○）：全員が見られる。自分の○だけ付け外しできる
+    match /availability/{id} {
+      allow read: if isMember();
+      allow create: if isMember() && isOwnNew();
+      allow update: if isMember() && isOwnExisting() && isOwnNew();
+      allow delete: if isMember() && isOwnExisting();
+    }
+
+    // 招待リストなどの設定：仲間は読めるが、アプリからは書き換えられない（Firebaseの画面でだけ編集）
+    match /config/{id} {
+      allow read: if isMember();
+      allow write: if false;
+    }
+
+    // チャット：全員が読める。自分の名前でだけ書ける。1〜500文字、時刻はサーバーの時刻、期限は1週間ほど先
+    // 削除は本人か、期限切れのものなら誰でも（期限切れは通知サーバーも消す）
+    match /chat/{id} {
+      allow read: if isMember();
+      allow create: if isMember() && isOwnNew()
+        && request.resource.data.keys().hasOnly(['uid', 'text', 'createdAt', 'expireAt'])
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 500
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.expireAt is timestamp
+        && request.resource.data.expireAt > request.time
+        && request.resource.data.expireAt < request.time + duration.value(8, 'd');
+      allow delete: if isMember() && (isOwnExisting() || resource.data.expireAt < request.time);
+    }
+
+    // 通知の宛先（スマホごとのトークン）：本人だけが登録・確認・削除できる（通知サーバーは管理者権限で読む）
+    match /pushTokens/{token} {
+      allow read, delete: if isMember() && isOwnExisting();
+      allow create, update: if isMember() && isOwnNew();
+    }
+  }
+}

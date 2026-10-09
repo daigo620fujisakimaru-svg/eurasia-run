@@ -1,0 +1,92 @@
+.summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.summary .dot {
+  margin-top: 6px;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.actions .primary {
+  grid-column: 1 / -1; /* GPS記録ボタンだけ横いっぱい */
+  padding: 16px;
+  font-size: 18px;
+}
+.actions .secondary {
+  padding: 12px 8px;
+  font-size: 14px;
+}
+
+.toggle {
+  display: flex;
+  background: var(--track);
+  border-radius: 999px;
+  padding: 3px;
+  margin: 20px 0 12px;
+}
+.toggle button {
+  flex: 1;
+  border: none;
+  background: none;
+  border-radius: 999px;
+  padding: 6px;
+  color: var(--muted);
+}
+.toggle button.active {
+  background: var(--card);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.run-list,
+.course-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.run-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+.run-head .muted {
+  margin-left: auto;
+}
+.run-body {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 4px 0;
+  font-size: 13px;
+}
+.run-foot {
+  display: flex;
+  gap: 4px;
+  font-size: 12px;
+}
+.run-foot .link,
+.course-list .link {
+  margin-left: auto;
+}
+
+.section-title {
+  margin-top: 24px;
+}
+.course-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.logout {
+  margin-top: 32px;
+  text-align: center;
+}

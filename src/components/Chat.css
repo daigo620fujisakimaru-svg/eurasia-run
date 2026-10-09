@@ -1,0 +1,141 @@
+.chat {
+  padding-bottom: 12px;
+}
+
+.chat-list {
+  height: 50vh;
+  min-height: 260px;
+  overflow-y: auto;
+  margin: 0 -16px;
+  padding: 8px 12px;
+  background: #e8edf3; /* LINEのトーク画面のような落ち着いた背景 */
+}
+@media (prefers-color-scheme: dark) {
+  .chat-list {
+    background: #1f2937;
+  }
+}
+
+.chat-empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 40px;
+}
+
+/* 日付の区切り */
+.chat-day {
+  text-align: center;
+  margin: 12px 0 8px;
+}
+.chat-day span {
+  display: inline-block;
+  padding: 2px 12px;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.18);
+  color: #fff;
+  font-size: 11px;
+}
+
+/* 1つの発言 */
+.chat-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+}
+.chat-row.continued {
+  margin-top: 4px;
+}
+.chat-row.mine {
+  justify-content: flex-end;
+}
+.chat-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.chat-body {
+  max-width: 78%;
+  display: flex;
+  flex-direction: column;
+}
+.chat-name {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 0 0 2px 4px;
+}
+.chat-line {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+.chat-row.mine .chat-line {
+  flex-direction: row-reverse; /* 自分の発言は時刻を左側に */
+}
+.chat-bubble {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 18px;
+  font-size: 15px;
+  line-height: 1.45;
+  white-space: pre-wrap; /* 改行をそのまま表示 */
+  overflow-wrap: anywhere; /* 長いURLなどもはみ出さない */
+}
+.chat-row.theirs .chat-bubble {
+  background: #fff;
+  color: #1c1917;
+  border-top-left-radius: 4px;
+}
+.chat-row.mine .chat-bubble {
+  background: var(--accent);
+  color: #fff;
+  border-top-right-radius: 4px;
+}
+.chat-row.continued .chat-bubble {
+  border-radius: 18px;
+}
+.chat-time {
+  font-size: 10px;
+  color: var(--muted);
+  flex-shrink: 0;
+  margin-bottom: 2px;
+}
+
+/* 入力欄 */
+.chat-input {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+.chat-input textarea {
+  flex: 1;
+  resize: none;
+  font: inherit;
+  font-size: 16px; /* 16px未満だとiPhoneで入力時に画面が拡大されてしまう */
+  line-height: 1.4;
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--text);
+  max-height: 110px;
+}
+.chat-send {
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 18px;
+  flex-shrink: 0;
+}

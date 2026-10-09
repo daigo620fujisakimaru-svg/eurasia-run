@@ -1,0 +1,67 @@
+# 予定とチャットの通知を、決まった時刻に自動で送る（GitHub Actions）
+# 時刻は UTC（世界標準時）で書く。日本時間 = UTC + 9時間
+name: notify
+
+on:
+  schedule:
+    - cron: '0 12 * * *' # 日本時間 21:00 … 明日の「朝」の予定
+    - cron: '0 22 * * *' # 日本時間 07:00 … 今日の「昼」の予定
+    - cron: '0 3 * * *' # 日本時間 12:00 … 今日の「夜」の予定
+    - cron: '*/5 * * * *' # 5分ごと … チャットの新着（予定の通知の送り忘れもここで補う）
+  workflow_dispatch: # GitHub の画面から手動で実行できる（試し送信など）
+    inputs:
+      mode:
+        description: 'モード'
+        type: choice
+        options: [test, chat, morning, noon, night]
+        default: test
+      email:
+        description: 'test のときに送る相手のメールアドレス'
+        type: string
+        required: false
+      dry_run:
+        description: '送らずに内容だけ表示する'
+        type: boolean
+        default: false
+
+# 前の実行が終わる前に次が始まらないようにする（二重送信の防止）
+concurrency:
+  group: notify
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+        working-directory: server
+
+      - name: どのモードで動かすか決める
+        id: mode
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+          INPUT_MODE: ${{ inputs.mode }}
+        run: |
+          case "$SCHEDULE" in
+            "0 12 * * *") echo "mode=morning" >> "$GITHUB_OUTPUT" ;;
+            "0 22 * * *") echo "mode=noon" >> "$GITHUB_OUTPUT" ;;
+            "0 3 * * *") echo "mode=night" >> "$GITHUB_OUTPUT" ;;
+            "*/5 * * * *") echo "mode=chat" >> "$GITHUB_OUTPUT" ;;
+            *) echo "mode=$INPUT_MODE" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: 通知を送る
+        working-directory: server
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          EMAIL: ${{ inputs.email }}
+          MODE: ${{ steps.mode.outputs.mode }}
+          DRY: ${{ inputs.dry_run && '--dry-run' || '' }}
+        run: node notify.mjs "$MODE" $DRY

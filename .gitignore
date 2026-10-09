@@ -1,0 +1,34 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# 公開リポジトリに入れないもの
+# ・docs：BGMの音源（再配布禁止）、動画、解説書、ナレーション
+docs/
+# ・Firebase の秘密の鍵（サービスアカウント）。GitHub の Secrets にだけ登録する
+*firebase-adminsdk*.json
+service-account*.json
+# ・Firebase のコマンドが作る一時ファイル
+.firebase/
+firebase-debug.log
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
